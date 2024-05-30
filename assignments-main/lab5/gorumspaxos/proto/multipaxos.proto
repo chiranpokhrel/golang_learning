@@ -1,0 +1,72 @@
+syntax = "proto3";
+package proto;
+option go_package = "dat520/lab5/gorumspaxos/proto";
+
+import "gorums.proto";
+
+service MultiPaxos {
+    rpc Prepare(PrepareMsg) returns (PromiseMsg) {
+        option (gorums.quorumcall) = true;
+    }
+
+    rpc Accept(AcceptMsg) returns (LearnMsg) {
+        option (gorums.quorumcall) = true;
+    }
+
+    rpc Commit(LearnMsg) returns (Empty) {
+        option (gorums.multicast) = true;
+    }
+
+    rpc ClientHandle(Value) returns (Response) {
+        option (gorums.quorumcall) = true;
+    }
+}
+
+message Value {
+    string ClientID      = 1;
+    uint32 ClientSeq     = 2;
+    bool isNoop          = 3;
+    string ClientCommand = 4;
+}
+
+message Response {
+    string ClientID      = 1;
+    uint32 ClientSeq     = 2;
+    string ClientCommand = 3;
+}
+
+message PrepareMsg {
+    uint32 Slot = 1;
+    int32 Crnd  = 2;
+}
+
+// PromiseMsg is the reply from an Acceptor to the Proposer in response to a PrepareMsg.
+// The Acceptor will only respond if the PrepareMsg.Rnd > Acceptor.Rnd.
+message PromiseMsg {
+    int32 Rnd                = 1;
+    repeated PValue Accepted = 2;
+}
+
+// AcceptMsg is sent by the Proposer, asking the Acceptors to lock-in the value, val.
+// If AcceptMsg.rnd < Acceptor.rnd, the message will be ignored.
+message AcceptMsg {
+    uint32 Slot = 1;
+    int32 Rnd   = 2;
+    Value Val   = 3;
+}
+
+// LearnMsg is sent by an Acceptor to the Proposer, if the Acceptor agreed to lock-in the value, val.
+// The LearnMsg is also sent by the Proposer in a Commit.
+message LearnMsg {
+    uint32 Slot = 1;
+    int32 Rnd   = 2;
+    Value Val   = 3;
+}
+
+message PValue {
+    uint32 Slot = 1;
+    int32 Vrnd  = 2;
+    Value Vval  = 3;
+}
+
+message Empty {}

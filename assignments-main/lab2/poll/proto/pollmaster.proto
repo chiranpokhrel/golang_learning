@@ -1,0 +1,26 @@
+syntax = "proto3";
+package proto;
+option go_package = "dat520/lab2/poll/proto";
+
+// The PollMaster service accepts registration and deregistration calls from participants.
+// The poll master will send questions to all registered participants.
+service PollMaster {
+    // Register a participant with the PollMaster for receiving future questions.
+    rpc Register(RegisterRequest) returns (RegisterResponse) {}
+    // Deregister a participant to stop receiving questions.
+    rpc Deregister(DeregisterRequest) returns (DeregisterResponse) {}
+}
+
+message RegisterRequest {
+    string Address = 1;
+}
+
+message RegisterResponse {
+    uint32 ID = 1;
+}
+
+message DeregisterRequest {
+    uint32 ID = 1;
+}
+
+message DeregisterResponse {}

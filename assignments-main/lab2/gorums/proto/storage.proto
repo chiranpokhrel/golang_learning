@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package proto;
+
+import "gorums.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "dat520/lab2/gorums/proto";
+
+service StorageService {
+    rpc Write(WriteRequest) returns (google.protobuf.Empty) {}
+
+    rpc Read(google.protobuf.Empty) returns (ReadResponse) {
+        option (gorums.quorumcall) = true;
+    }
+}
+
+message WriteRequest {
+    string Value = 1;
+}
+
+message ReadResponse {
+    repeated string Values = 1;
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package proto;
+option go_package = "dat520/lab3/gorumsfd/proto";
+
+import "gorums.proto";
+import "google/protobuf/empty.proto";
+
+service FailureDetector {
+    rpc Heartbeat(HeartBeat) returns (google.protobuf.Empty) {
+        option (gorums.multicast) = true;
+    }
+}
+
+message HeartBeat {
+    uint32 ID = 1;
+}

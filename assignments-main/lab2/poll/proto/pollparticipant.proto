@@ -1,0 +1,26 @@
+syntax = "proto3";
+package proto;
+option go_package = "dat520/lab2/poll/proto";
+
+import "gorums.proto";
+
+// A PollParticipant is a participant in a poll.
+service PollParticipant {
+    // Poll is called by the poll master to send a question to all the participants.
+    // A participant should respond with the ID of the question and its answer.
+    // The poll master will wait for a quorum of responses before returning.
+    rpc Poll(Question) returns (Answer) {
+        option (gorums.quorumcall) = true;
+    }
+}
+
+message Question {
+    int32 ID               = 1;
+    string Question        = 2;
+    repeated string Option = 3;
+}
+
+message Answer {
+    int32 ID     = 1;
+    int32 Answer = 2;
+}
